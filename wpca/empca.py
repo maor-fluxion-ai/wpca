@@ -114,14 +114,14 @@ class EMPCA(BaseEstimator, TransformerMixin):
         coeff = self._Estep(X_c, weights, eigvec)
 
         self.components_ = eigvec
-        self.explained_variance_ = (coeff ** 2).sum(0) / X.shape[0]
+        self.explained_variance_ = (coeff ** 2).sum(0) / (X.shape[0] - 1)
 
         if weights is None:
             total_var = X_c.var(0).sum()
         else:
             XW = X_c * weights
             total_var = np.sum((XW ** 2).sum(0) / (weights ** 2).sum(0))
-        self.explained_variance_ratio_ = (self.explained_variance_ / total_var)
+        self.explained_variance_ratio_ = (self.explained_variance_ / total_var) / X.shape[0] * (X.shape[0] - 1)
         return coeff
 
     def fit(self, X, y=None, weights=None):

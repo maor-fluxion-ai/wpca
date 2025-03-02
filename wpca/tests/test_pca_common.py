@@ -1,5 +1,5 @@
-from wpca.tests.tools import assert_columns_allclose_upto_sign
-from wpca import PCA, WPCA, EMPCA
+from ..tests.tools import assert_columns_allclose_upto_sign
+from .. import PCA, WPCA, EMPCA
 
 from sklearn.decomposition import PCA as SKPCA
 from sklearn.utils.estimator_checks import check_estimator
@@ -17,8 +17,8 @@ DATA = {shape: rand.randn(*shape) for shape in SHAPES}
 
 
 def test_estimator_checks():
-    for Estimator in ESTIMATORS:
-        yield check_estimator, Estimator
+    for estimator in ESTIMATORS:
+        check_estimator(estimator())
 
 
 def test_components_None():
@@ -34,7 +34,7 @@ def test_components_None():
     for Estimator in ESTIMATORS:
         for shape in SHAPES:
             if shape[0] > shape[1]:
-                yield check_components, Estimator, shape
+                check_components(Estimator, shape)
 
 
 def test_components_vs_sklearn():
@@ -42,7 +42,7 @@ def test_components_vs_sklearn():
         X = DATA[shape]
 
         pca = Estimator(n_components, **KWDS[Estimator]).fit(X)
-        skpca = SKPCA(n_components).fit(X)
+        skpca = SKPCA(n_components, svd_solver="full").fit(X)
 
         assert_columns_allclose_upto_sign(pca.components_.T,
                                           skpca.components_.T)
@@ -50,7 +50,7 @@ def test_components_vs_sklearn():
     for Estimator in ESTIMATORS:
         for shape in SHAPES:
             for n_components in N_COMPONENTS:
-                yield check_components, Estimator, n_components, shape
+                check_components(Estimator, n_components, shape)
 
 
 def test_explained_variance_vs_sklearn():
@@ -58,7 +58,7 @@ def test_explained_variance_vs_sklearn():
         X = DATA[shape]
 
         pca = Estimator(n_components, **KWDS[Estimator]).fit(X)
-        skpca = SKPCA(n_components).fit(X)
+        skpca = SKPCA(n_components, svd_solver="full").fit(X)
 
         assert_allclose(pca.explained_variance_,
                         skpca.explained_variance_)
@@ -68,7 +68,7 @@ def test_explained_variance_vs_sklearn():
     for Estimator in ESTIMATORS:
         for shape in SHAPES:
             for n_components in N_COMPONENTS:
-                yield check_explained_variance, Estimator, n_components, shape
+                check_explained_variance(Estimator, n_components, shape)
 
 
 def test_transform_vs_sklearn():
@@ -85,7 +85,7 @@ def test_transform_vs_sklearn():
     for Estimator in ESTIMATORS:
         for shape in SHAPES:
             for n_components in N_COMPONENTS:
-                yield check_transform, Estimator, n_components, shape
+                check_transform(Estimator, n_components, shape)
 
 
 def test_transform_vs_fit_transform():
@@ -100,7 +100,7 @@ def test_transform_vs_fit_transform():
     for Estimator in ESTIMATORS:
         for shape in SHAPES:
             for n_components in N_COMPONENTS:
-                yield check_transform, Estimator, n_components, shape
+                check_transform(Estimator, n_components, shape)
 
 
 def test_pca_reconstruct():
@@ -114,7 +114,7 @@ def test_pca_reconstruct():
 
     for Estimator in ESTIMATORS:
         for shape in SHAPES:
-            yield check_reconstruct, Estimator, shape
+            check_reconstruct(Estimator, shape)
 
 
 def test_bad_inputs():
@@ -129,4 +129,4 @@ def test_bad_inputs():
 
     for Estimator in ESTIMATORS:
         for bad_val in [np.inf, np.nan]:
-            yield check_bad_inputs, Estimator, bad_val
+            check_bad_inputs(Estimator, bad_val)

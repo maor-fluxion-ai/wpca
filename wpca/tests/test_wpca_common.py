@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.testing import assert_allclose, assert_raises
-from wpca.tests.tools import assert_columns_allclose_upto_sign
+from ..tests.tools import assert_columns_allclose_upto_sign
 
-from wpca import PCA, WPCA, EMPCA
+from .. import PCA, WPCA, EMPCA
 
 
 ESTIMATORS = [WPCA, EMPCA]
@@ -14,12 +14,12 @@ def test_weighted_mean():
     X = np.random.rand(30, 3)
     W = np.random.rand(30, 3)
 
-    def test_weighted_mean(Estimator):
+    def weighted_mean(Estimator):
         pca = Estimator().fit(X, weights=W)
         assert_allclose(pca.mean_, np.average(X, weights=W, axis=0))
 
     for Estimator in ESTIMATORS:
-        yield test_weighted_mean, Estimator
+        weighted_mean(Estimator)
 
 
 def test_fit_and_fit_transform():
@@ -41,7 +41,7 @@ def test_fit_and_fit_transform():
 
     for Estimator in ESTIMATORS:
         for copy_data in [True, False]:
-            yield check_results, Estimator, copy_data
+            check_results(Estimator, copy_data)
 
 
 def test_constant_weights():
@@ -77,7 +77,7 @@ def test_constant_weights():
                         pca2.fit_reconstruct(X, weights=W))
 
     for Estimator in ESTIMATORS:
-        yield check_results, Estimator
+        check_results(Estimator)
 
 
 def test_outlier_weights():
@@ -100,7 +100,7 @@ def test_outlier_weights():
 
     for (n_outliers, noise_level, rtol) in [(1, 20, 1E-3), (10, 10, 3E-2)]:
         for Estimator in ESTIMATORS:
-            yield check_results, Estimator, n_outliers, noise_level, rtol
+            check_results(Estimator, n_outliers, noise_level, rtol)
 
 
 def test_nan_weights():
@@ -135,7 +135,7 @@ def test_nan_weights():
         assert_allclose(Z1, Z2)
 
     for Estimator in ESTIMATORS:
-        yield check_results, Estimator
+        check_results(Estimator)
 
 
 def test_bad_inputs():
@@ -156,9 +156,9 @@ def test_bad_inputs():
         assert_raises(ValueError, pca.fit, X, weights=W)
 
     for Estimator in ESTIMATORS:
-        yield check_mismatch, Estimator
+        check_mismatch(Estimator)
         for bad_val in [np.inf, np.nan]:
-            yield check_bad_inputs, Estimator, bad_val
+            check_bad_inputs(Estimator, bad_val)
 
 
 def test_copy_data():

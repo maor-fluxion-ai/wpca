@@ -58,9 +58,9 @@ class PCA(BaseEstimator, TransformerMixin):
             n_components = self.n_components
 
         self.mean_ = X.mean(0)
-        U, s, VT = np.linalg.svd(X - self.mean_)
+        U, s, VT = np.linalg.svd(X - self.mean_, full_matrices=False)
         self.components_ = VT[:n_components]
-        var = s ** 2 / X.shape[0]
+        var = (s ** 2) / (X.shape[0] - 1)
         self.explained_variance_ = var[:self.n_components]
         self.explained_variance_ratio_ = var[:n_components] / var.sum()
         return s[:n_components] * U[:, :n_components]

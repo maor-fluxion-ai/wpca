@@ -3,8 +3,8 @@ from itertools import chain, combinations
 import numpy as np
 from numpy.testing import assert_allclose
 
-from wpca.tests.tools import assert_allclose_upto_sign
-from wpca.utils import orthonormalize, random_orthonormal, weighted_mean
+from ..tests.tools import assert_allclose_upto_sign
+from ..utils import orthonormalize, random_orthonormal, weighted_mean
 
 
 def test_orthonormalize():
@@ -26,8 +26,8 @@ def test_random_orthonormal():
         assert_allclose(C, np.eye(C.shape[0]), atol=1E-15)
     for M in [5]:
         for N in range(1, M + 1):
-            yield check_random_orthonormal, N, M, True
-            yield check_random_orthonormal, M, N, False
+            check_random_orthonormal(N, M, True)
+            check_random_orthonormal(M, N, False)
 
 
 def test_weighted_mean():
@@ -45,4 +45,4 @@ def test_weighted_mean():
         axis_tuples = chain(*(combinations(range(ndim), nax)
                             for nax in range(ndim + 1)))
         for axis in chain([None], range(ndim), axis_tuples):
-            yield check_weighted_mean, shape, axis
+            check_weighted_mean(shape, axis)
